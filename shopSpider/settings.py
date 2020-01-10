@@ -161,6 +161,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # ========= 自定义=============
 SPADER_SHOP_CONFIG = {
+  'domain': ['http://www.hhanbag.com'],            # 爬取的网站域名
+
+  ### ==========   菜单导航条
   'mainNavBarFilterByIndex': [0],                  # 一级菜单导航通过index过滤
   'mainNavBarSelector': '.navbar-left_new>li'      # 一级菜单导航选择器
 }

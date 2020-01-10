@@ -4,14 +4,16 @@ import scrapy
 
 class ZcnSpider(scrapy.Spider):
     name = 'zcn'
-    allowed_domains = ['http://www.hhanbag.com']
-    start_urls = ['http://www.hhanbag.com']
+    allowed_domains = []
+    start_urls = []
 
     config = {}          # settings自定义配置项
     filter_main_navBars = []    #  过滤后的一级菜单
     category_urls = []   # 需要爬取的分类链接
 
     def __init__(self, config):
+        self.allowed_domains = config['domain']
+        self.start_urls = config['domain']
         self.config = config
 
     @classmethod
@@ -36,7 +38,7 @@ class ZcnSpider(scrapy.Spider):
         main_navBars = response.css(self.config['mainNavBarSelector'])
         for index,navBar in enumerate(main_navBars):
             # 过滤一级菜单导航，去掉不需要的
-            if index  not in self.config['mainNavBarFilterByIndex']:
+            if index not in self.config['mainNavBarFilterByIndex']:
                 self.filter_main_navBars.append(navBar)
 
     
