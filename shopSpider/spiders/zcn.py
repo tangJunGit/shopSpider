@@ -46,8 +46,7 @@ class ZcnSpider(scrapy.Spider):
     def getCategoryUrls(self):
         for navBar in self.filter_main_navBars:
             hrefs = navBar.css('a::attr(href)').extract()
-            for href in hrefs:
-                self.category_urls.append(href)
+            self.category_urls.extend(hrefs)
                 
 
     # 处理商品列表
