@@ -7,9 +7,7 @@ class ZcnSpider(scrapy.Spider):
     allowed_domains = []
     start_urls = []
 
-    config = {}          # settings自定义配置项
-    filter_main_navBars = []    #  过滤后的一级菜单
-    category_urls = []   # 需要爬取的分类链接
+    config = {}                 # settings自定义配置项
 
     def __init__(self, config):
         self.allowed_domains = config['domain']
@@ -22,33 +20,42 @@ class ZcnSpider(scrapy.Spider):
 
 
     def parse(self, response):
+        filter_main_navBars = []                # 过滤后的一级菜单
+
         # 获取一级菜单
-        self.getMainNavBars(response)
-
-        # 获取分类链接
-        self.getCategoryUrls()
-
-        # 请求商品列表
-        for url in self.category_urls:
-            yield scrapy.Request(url=url, callback=self.handleProductList, dont_filter=True)
-            
-
-    # 获取一级菜单
-    def getMainNavBars(self, response):
         main_navBars = response.css(self.config['mainNavBarSelector'])
         for index,navBar in enumerate(main_navBars):
             # 过滤一级菜单导航，去掉不需要的
             if index not in self.config['mainNavBarFilterByIndex']:
-                self.filter_main_navBars.append(navBar)
+                filter_main_navBars.append(navBar)
+        
+        self.getCategoryUrls(filter_main_navBars)
 
-    
-    # 获取分类链接
-    def getCategoryUrls(self):
-        for navBar in self.filter_main_navBars:
+    # 处理商品分类
+    # noinspection PyInterpreter
+    def getCategoryUrls(self, navBars):
+        category_urls = []          # 需要爬取的分类链接
+        
+        # 获取所有分类链接
+        for navBar in navBars:
             hrefs = navBar.css('a::attr(href)').extract()
-            self.category_urls.extend(hrefs)
+            category_urls.extend(hrefs)
+
+        # 根据商品分类请求商品列表
+        for url in category_urls:
+            yield scrapy.Request(url=url, callback=self.handleProductList, dont_filter=True)
                 
 
     # 处理商品列表
     def handleProductList(self, response):
+        list_urls = response.css(self.config['listUrlsSelector']).extract()         # 需要爬取的列表链接
+
+        # 根据商品列表请求商品详情
+        for url in list_urls: 
+            yield scrapy.Request(url=url, callback=self.handleProductDetails, dont_filter=True)
+
+    
+    # 处理商品详情
+    def handleProductDetails(self, response):
         print(response)
+        print('==========')
