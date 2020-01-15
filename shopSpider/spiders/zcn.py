@@ -6,12 +6,11 @@ class ZcnSpider(scrapy.Spider):
     name = 'zcn'
     allowed_domains = []
     start_urls = []
-
     config = {}                 # settings自定义配置项
 
     def __init__(self, config):
         self.allowed_domains = config['domain']
-        self.start_urls = config['domain']
+        self.start_urls = config['start_urls']
         self.config = config
 
     @classmethod
@@ -20,7 +19,8 @@ class ZcnSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        filter_main_navBars = []                # 过滤后的一级菜单
+        filter_main_navBars = []    # 过滤后的一级菜单
+        category_urls = []          # 需要爬取的分类链接
 
         # 获取一级菜单
         main_navBars = response.css(self.config['mainNavBarSelector'])
@@ -29,22 +29,14 @@ class ZcnSpider(scrapy.Spider):
             if index not in self.config['mainNavBarFilterByIndex']:
                 filter_main_navBars.append(navBar)
         
-        self.getCategoryUrls(filter_main_navBars)
-
-    # 处理商品分类
-    # noinspection PyInterpreter
-    def getCategoryUrls(self, navBars):
-        category_urls = []          # 需要爬取的分类链接
-        
-        # 获取所有分类链接
-        for navBar in navBars:
+        # 根据过滤后的一级菜单获取所有分类链接
+        for navBar in filter_main_navBars:
             hrefs = navBar.css('a::attr(href)').extract()
             category_urls.extend(hrefs)
 
         # 根据商品分类请求商品列表
         for url in category_urls:
             yield scrapy.Request(url=url, callback=self.handleProductList, dont_filter=True)
-                
 
     # 处理商品列表
     def handleProductList(self, response):
