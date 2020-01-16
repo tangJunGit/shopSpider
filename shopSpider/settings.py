@@ -131,9 +131,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'shopSpider.pipelines.ShopspiderPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'shopSpider.pipelines.MysqlPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -162,13 +162,31 @@ DEFAULT_REQUEST_HEADERS = {
 # ========= 自定义=============
 SPADER_SHOP_CONFIG = {
   'domain': ['hhanbag.com'],             # 爬取的网站域名
-  'start_urls': ['http://www.hhanbag.com/'],             # 爬取的网站域名
+  'startUrls': ['http://www.hhanbag.com/'],           # 爬取的网站域名
 
   ### ==========   菜单导航条
-  'mainNavBarFilterByIndex': [0],                   # 一级菜单导航通过index过滤
-  'mainNavBarSelector': '.navbar-left_new>li',      # 一级菜单导航选择器
+  'mainNavBarFilterByIndex': [0],                     # 一级菜单导航通过index过滤
+  'mainNavBarSelector': '.navbar-left_new>li',        # 一级菜单导航选择器
 
 
-  ### ==========   商品列表
-  'listUrlsSelector': '.product-image>a::attr("href")'
+  ### ==========    商品列表
+  'listUrlsSelector': '.product-image>a::attr("href")',     # 商品列表链接选择器
+
+
+  ### ==========    商品分类
+  'breadcrumbSelector': '.breadcrumb>li>a::text',           # 商品分类选择器
+
+
+  ### ==========    商品详情
+  'productsPriceSelector': '#productPrice::text',           # 商品价格选择器
+  'productsNameSelector': '.title>h1::text',                # 商品名称选择器
+  'productsDescriptionSelector': '.desc_blk>.rte',    # 商品描述选择器
 }
+
+
+# ========= MYSQL =============
+MYSQL_HOST = 'localhost'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '123456'
+MYSQL_DATABASE = 'zcn'
+MYSQL_PORT = 3306

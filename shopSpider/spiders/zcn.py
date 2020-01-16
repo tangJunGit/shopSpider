@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
+from shopSpider.items import ProductItem
 
 class ZcnSpider(scrapy.Spider):
     name = 'zcn'
@@ -10,7 +10,7 @@ class ZcnSpider(scrapy.Spider):
 
     def __init__(self, config):
         self.allowed_domains = config['domain']
-        self.start_urls = config['start_urls']
+        self.start_urls = config['startUrls']
         self.config = config
 
     @classmethod
@@ -19,8 +19,17 @@ class ZcnSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        filter_main_navBars = []    # 过滤后的一级菜单
-        category_urls = []          # 需要爬取的分类链接
+        # 获取分类链接
+        category_urls = self.getCategoryUrls(response)   
+
+        # 根据商品分类请求商品列表
+        for url in category_urls[0:1]:
+            yield scrapy.Request(url=url, callback=self.handleProductList, dont_filter=True)
+
+    #处理菜单并获取分类链接
+    def getCategoryUrls(self, response):
+        filter_main_navBars = []                    # 过滤后的一级菜单
+        category_urls = []                          # 需要爬取的分类链接
 
         # 获取一级菜单
         main_navBars = response.css(self.config['mainNavBarSelector'])
@@ -33,10 +42,8 @@ class ZcnSpider(scrapy.Spider):
         for navBar in filter_main_navBars:
             hrefs = navBar.css('a::attr(href)').extract()
             category_urls.extend(hrefs)
-
-        # 根据商品分类请求商品列表
-        for url in category_urls:
-            yield scrapy.Request(url=url, callback=self.handleProductList, dont_filter=True)
+        
+        return category_urls
 
     # 处理商品列表
     def handleProductList(self, response):
@@ -49,5 +56,9 @@ class ZcnSpider(scrapy.Spider):
     
     # 处理商品详情
     def handleProductDetails(self, response):
-        print(response)
-        print('==========')
+        item = ProductItem()
+        item['categories'] = response.css(self.config['breadcrumbSelector']).extract()[1:]         # 根据面包屑获取分类等级数组
+        item['products_price'] = response.css(self.config['productsPriceSelector']).extract_first().replace('$','').replace(' ','')   # 爬取的价格去掉 $
+        item['products_name'] = response.css(self.config['productsNameSelector']).extract_first()
+        item['products_description'] = response.css(self.config['productsDescriptionSelector']).extract_first()
+        yield item

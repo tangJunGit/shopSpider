@@ -8,7 +8,9 @@
 import scrapy
 
 
-class ShopspiderItem(scrapy.Item):
+class ProductItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    categories = scrapy.Field()                 # 分类等级数组
+    products_price = scrapy.Field()             # 商品价格
+    products_name = scrapy.Field()              # 商品名称
+    products_description = scrapy.Field()       # 商品描述
