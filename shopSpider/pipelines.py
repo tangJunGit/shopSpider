@@ -40,8 +40,10 @@ class MysqlPipeline():
         # 处理商品分类 
         for category_name in item['categories']:
             parent_id = self.productsCategoryStore(category_name, parent_id)
+        print('=========================================商品分类：', category_name)
 
         # 处理商品详情
+        print('=========================================商品名称：', item['products_name'])
         self.productsDetailStore(item, parent_id)
 
             

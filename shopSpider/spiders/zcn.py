@@ -23,7 +23,7 @@ class ZcnSpider(scrapy.Spider):
         category_urls = self.getCategoryUrls(response)   
 
         # 根据商品分类请求商品列表
-        for url in category_urls[0:1]:
+        for url in category_urls:
             yield scrapy.Request(url=url, callback=self.handleProductList, dont_filter=True)
 
     #处理菜单并获取分类链接
@@ -52,6 +52,10 @@ class ZcnSpider(scrapy.Spider):
         # 根据商品列表请求商品详情
         for url in list_urls: 
             yield scrapy.Request(url=url, callback=self.handleProductDetails, dont_filter=True)
+
+        # 商品列表下一页
+        next = response.css(self.config['listNextSelector']).extract_first()
+        yield scrapy.Request(url=next, callback=self.handleProductList, dont_filter=True)
 
     
     # 处理商品详情

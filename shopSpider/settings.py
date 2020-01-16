@@ -161,7 +161,7 @@ ITEM_PIPELINES = {
 
 # ========= 自定义=============
 SPADER_SHOP_CONFIG = {
-  'domain': ['hhanbag.com'],             # 爬取的网站域名
+  'domain': ['hhanbag.com'],                          # 爬取的网站域名
   'startUrls': ['http://www.hhanbag.com/'],           # 爬取的网站域名
 
   ### ==========   菜单导航条
@@ -171,6 +171,7 @@ SPADER_SHOP_CONFIG = {
 
   ### ==========    商品列表
   'listUrlsSelector': '.product-image>a::attr("href")',     # 商品列表链接选择器
+  'listNextSelector': 'a.next::attr("href")',               # 商品列表下一页按钮选择器
 
 
   ### ==========    商品分类
@@ -180,7 +181,7 @@ SPADER_SHOP_CONFIG = {
   ### ==========    商品详情
   'productsPriceSelector': '#productPrice::text',           # 商品价格选择器
   'productsNameSelector': '.title>h1::text',                # 商品名称选择器
-  'productsDescriptionSelector': '.desc_blk>.rte',    # 商品描述选择器
+  'productsDescriptionSelector': '.desc_blk>.rte',          # 商品描述选择器
 }
 
 
@@ -188,5 +189,5 @@ SPADER_SHOP_CONFIG = {
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
 MYSQL_PASSWORD = '123456'
-MYSQL_DATABASE = 'zcn'
+MYSQL_DATABASE = 'z156'
 MYSQL_PORT = 3306
