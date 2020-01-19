@@ -14,18 +14,19 @@ import time
 # 商品图片保存到本地
 class ImagePipeline(ImagesPipeline):
     # 处理图片文件名
-    # def file_path(self, request, response=None, info=None):
-    #     url = request.url
-    #     file_name = url.split('/')[-1]
-    #     products_name = request.meta['item']['products_name']
-    #     return "{0}/{1}".format(products_name, file_name)
+    def file_path(self, request, response=None, info=None):
+        url = request.url
+        file_name = url.split('/')[-1]
+        # products_name = request.meta['item']['products_name']
+        # return "{0}/{1}".format(products_name, file_name)
+        return file_name
     
     # 图片下载异常处理
-    # def item_completed(self, results, item, info):
-    #     image_paths = [x['path'] for ok, x in results if ok]
-    #     if not image_paths:
-    #         raise DropItem('Image Downloaded Failed')
-    #     return item
+    def item_completed(self, results, item, info):
+        image_paths = [x['path'] for ok, x in results if ok]
+        if not image_paths:
+            raise DropItem('Image Downloaded Failed')
+        return item
     
     def get_media_requests(self, item, info):
         print('=========================================下载图片：', item['products_name'])
@@ -99,7 +100,7 @@ class MysqlPipeline():
     def productsDetailStore(self, item, category_id):
         # 插入商品表
         insert_sql = 'INSERT INTO products (products_quantity, products_image, products_price, products_date_added, products_last_modified, products_date_available, products_status) VALUES (% s, % s, % s, % s, % s, % s, % s)'
-        self.cursor.execute(insert_sql, [10000, '', item['products_price'], self.current_time, self.current_time, self.current_time, 1])
+        self.cursor.execute(insert_sql, [10000, item['products_images'][0], item['products_price'], self.current_time, self.current_time, self.current_time, 1])
         products_id = self.cursor.lastrowid
         self.db.commit()
 

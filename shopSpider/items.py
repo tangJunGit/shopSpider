@@ -14,4 +14,4 @@ class ProductItem(scrapy.Item):
     products_price = scrapy.Field()             # 商品价格
     products_name = scrapy.Field()              # 商品名称
     products_description = scrapy.Field()       # 商品描述
-    products_images = scrapy.Field()            # 商品图片
+    products_images = scrapy.Field()            # 商品图片路径
