@@ -5,10 +5,35 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-
+from scrapy import Request
+from scrapy.exceptions import DropItem
+from scrapy.pipelines.images import ImagesPipeline
 import pymysql
 import time
 
+# 商品图片保存到本地
+class ImagePipeline(ImagesPipeline):
+    # 处理图片文件名
+    # def file_path(self, request, response=None, info=None):
+    #     url = request.url
+    #     file_name = url.split('/')[-1]
+    #     products_name = request.meta['item']['products_name']
+    #     return "{0}/{1}".format(products_name, file_name)
+    
+    # 图片下载异常处理
+    # def item_completed(self, results, item, info):
+    #     image_paths = [x['path'] for ok, x in results if ok]
+    #     if not image_paths:
+    #         raise DropItem('Image Downloaded Failed')
+    #     return item
+    
+    def get_media_requests(self, item, info):
+        print('=========================================下载图片：', item['products_name'])
+        for url in item['products_images']: 
+            yield Request(url=url, meta={'item':item})
+
+
+# 商品信息保存到数据库
 class MysqlPipeline():
     current_time = time.strftime("%Y-%m-%d %H:%M:%S")
     def __init__(self, host, database, user, password, port):

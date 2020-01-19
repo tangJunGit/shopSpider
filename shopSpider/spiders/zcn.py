@@ -23,7 +23,7 @@ class ZcnSpider(scrapy.Spider):
         category_urls = self.getCategoryUrls(response)   
 
         # 根据商品分类请求商品列表
-        for url in category_urls:
+        for url in category_urls[0:1]:
             yield scrapy.Request(url=url, callback=self.handleProductList, dont_filter=True)
 
     #处理菜单并获取分类链接
@@ -47,22 +47,29 @@ class ZcnSpider(scrapy.Spider):
 
     # 处理商品列表
     def handleProductList(self, response):
-        list_urls = response.css(self.config['listUrlsSelector']).extract()         # 需要爬取的列表链接
+        list_urls = response.css(self.config['listUrlsSelector']).extract()[0:1]         # 需要爬取的列表链接
 
         # 根据商品列表请求商品详情
         for url in list_urls: 
             yield scrapy.Request(url=url, callback=self.handleProductDetails, dont_filter=True)
 
         # 商品列表下一页
-        next = response.css(self.config['listNextSelector']).extract_first()
-        yield scrapy.Request(url=next, callback=self.handleProductList, dont_filter=True)
+        # next = response.css(self.config['listNextSelector']).extract_first()
+        # if next is not None:
+        #     yield scrapy.Request(url=next, callback=self.handleProductList, dont_filter=True)
 
     
     # 处理商品详情
     def handleProductDetails(self, response):
         item = ProductItem()
-        item['categories'] = response.css(self.config['breadcrumbSelector']).extract()[1:]         # 根据面包屑获取分类等级数组
-        item['products_price'] = response.css(self.config['productsPriceSelector']).extract_first().replace('$','').replace(' ','')   # 爬取的价格去掉 $
-        item['products_name'] = response.css(self.config['productsNameSelector']).extract_first()
-        item['products_description'] = response.css(self.config['productsDescriptionSelector']).extract_first()
+        if self.config['breadcrumbSelector'] is not None:
+            item['categories'] = response.css(self.config['breadcrumbSelector']).extract()[1:]         # 根据面包屑获取分类等级数组
+        if self.config['productsPriceSelector'] is not None:
+            item['products_price'] = response.css(self.config['productsPriceSelector']).extract_first().replace('$','').replace(' ','')   # 爬取的价格去掉 $
+        if self.config['productsNameSelector'] is not None:
+            item['products_name'] = response.css(self.config['productsNameSelector']).extract_first()
+        if self.config['productsDescriptionSelector'] is not None:
+            item['products_description'] = response.css(self.config['productsDescriptionSelector']).extract_first()
+        if self.config['productsImagesSelector'] is not None:
+            item['products_images'] = response.css(self.config['productsImagesSelector']).extract()
         yield item

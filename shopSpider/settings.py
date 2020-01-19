@@ -105,7 +105,8 @@ DEFAULT_REQUEST_HEADERS = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
   'Accept-Encoding': 'gzip, deflate',
   'Accept-Language': 'zh-CN,zh;q=0.9',
-  'Host': 'www.hhanbag.com',
+  'Host': 'www.birkin.cc',
+  'Referer': 'http://www.birkin.cc',
   'Proxy-Connection': 'keep-alive',
   'Upgrade-Insecure-Requests': '1',
   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36"
@@ -132,7 +133,8 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'shopSpider.pipelines.MysqlPipeline': 300,
+  'shopSpider.pipelines.ImagePipeline': 300,
+  #  'shopSpider.pipelines.MysqlPipeline': 301,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -161,17 +163,17 @@ ITEM_PIPELINES = {
 
 # ========= 自定义=============
 SPADER_SHOP_CONFIG = {
-  'domain': ['hhanbag.com'],                          # 爬取的网站域名
-  'startUrls': ['http://www.hhanbag.com/'],           # 爬取的网站域名
+  'domain': ['birkin.cc'],                          # 爬取的网站域名
+  'startUrls': ['http://www.birkin.cc/'],           # 爬取的网站域名
 
   ### ==========   菜单导航条
-  'mainNavBarFilterByIndex': [0],                     # 一级菜单导航通过index过滤
-  'mainNavBarSelector': '.navbar-left_new>li',        # 一级菜单导航选择器
+  'mainNavBarFilterByIndex': [6],                    # 一级菜单导航通过index过滤
+  'mainNavBarSelector': '.sitenav .menu-item',       # 一级菜单导航选择器
 
 
   ### ==========    商品列表
-  'listUrlsSelector': '.product-image>a::attr("href")',     # 商品列表链接选择器
-  'listNextSelector': 'a.next::attr("href")',               # 商品列表下一页按钮选择器
+  'listUrlsSelector': '.excerpts-wrapper .excerpt>a::attr("href")',     # 商品列表链接选择器
+  'listNextSelector': '.next-page>a::attr("href")',         # 商品列表下一页按钮选择器
 
 
   ### ==========    商品分类
@@ -179,11 +181,14 @@ SPADER_SHOP_CONFIG = {
 
 
   ### ==========    商品详情
-  'productsPriceSelector': '#productPrice::text',           # 商品价格选择器
-  'productsNameSelector': '.title>h1::text',                # 商品名称选择器
-  'productsDescriptionSelector': '.desc_blk>.rte',          # 商品描述选择器
+  'productsPriceSelector': None,                                  # 商品价格选择器
+  'productsNameSelector': '.article-title::text',                 # 商品名称选择器
+  'productsDescriptionSelector': '.article-content>h3',           # 商品描述选择器
+  'productsImagesSelector': '.article-content img::attr("src")',  # 商品图片选择器
 }
 
+# ========= IMAGE =============
+IMAGES_STORE = 'D:\\images'
 
 # ========= MYSQL =============
 MYSQL_HOST = 'localhost'
