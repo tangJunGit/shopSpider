@@ -4,19 +4,37 @@ from shopSpider.items import ProductItem
 
 class ZcnSpider(scrapy.Spider):
     name = 'zcn'
-    allowed_domains = []
-    start_urls = []
-    config = {}                 # settings自定义配置项
+    allowed_domains = ["hermesprice.com"]
+    start_urls = ['http://www.hermesprice.com']
 
-    def __init__(self, config):
-        self.allowed_domains = config['domain']
-        self.start_urls = config['startUrls']
-        self.config = config
+    # ========= 自定义配置项 =============
+    config = {
+        ### ==========   菜单导航条
+        # 一级菜单导航通过index过滤
+        'mainNavBarFilterByIndex': [0],          
+        # 一级菜单导航选择器          
+        'mainNavBarSelector': '#nav>li',       
 
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(config=crawler.settings.get('SPADER_SHOP_CONFIG'))  
+        ### ==========    商品列表
+        # 商品列表链接选择器
+        'listUrlsSelector': '.category-products .item>a::attr("href")',     
+        # 商品列表下一页按钮选择器
+        'listNextSelector': '.next-page>a::attr("href")',         
 
+        ### ==========    商品分类
+        # 商品分类选择器
+        'breadcrumbSelector': '.breadcrumbs>ul>li>a::text',           
+
+        ### ==========    商品详情
+        # 商品价格选择器
+        'productsPriceSelector': '.price-box .price::text',          
+        # 商品名称选择器                        
+        'productsNameSelector': '.product-name-main>h2::text',        
+        # 商品描述选择器         
+        'productsDescriptionSelector': '.wk_details_description',       
+        # 商品图片选择器    
+        'productsImagesSelector': '.product-img-box .slide img::attr("src")',  
+    }
 
     def parse(self, response):
         # 获取分类链接
@@ -47,7 +65,8 @@ class ZcnSpider(scrapy.Spider):
 
     # 处理商品列表
     def handleProductList(self, response):
-        list_urls = response.css(self.config['listUrlsSelector']).extract()         # 需要爬取的列表链接
+        # 需要爬取的列表链接
+        list_urls = response.css(self.config['listUrlsSelector']).extract()         
 
         # 根据商品列表请求商品详情
         for url in list_urls: 
@@ -62,9 +81,12 @@ class ZcnSpider(scrapy.Spider):
     # 处理商品详情
     def handleProductDetails(self, response):
         item = ProductItem()
-        item['categories'] = response.css(self.config['breadcrumbSelector']).extract()[1:]         # 根据面包屑获取分类等级数组
-        item['products_price'] = response.css(self.config['productsPriceSelector']).extract_first().replace('$','').replace(' ','')   # 爬取的价格去掉 $
-        item['products_name'] = response.css(self.config['productsNameSelector']).extract_first()
+        # 根据面包屑获取分类等级数组
+        item['categories'] = response.css(self.config['breadcrumbSelector']).extract()[1:]  
+        # 爬取的价格去掉 $        
+        item['products_price'] = response.css(self.config['productsPriceSelector']).extract_first().replace('$','').replace(' ','')   
+        # 爬取的名称作为文件名去掉 /
+        item['products_name'] = response.css(self.config['productsNameSelector']).extract_first().replace('/','').replace('\\','')    
         item['products_description'] = response.css(self.config['productsDescriptionSelector']).extract_first()
         item['products_images'] = response.css(self.config['productsImagesSelector']).extract()
         yield item
