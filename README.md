@@ -1,1 +1,1 @@
-### Python3.+Scrapy
+### Python3.7+Scrapy
