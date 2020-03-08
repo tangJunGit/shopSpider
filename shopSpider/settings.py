@@ -90,8 +90,8 @@ DEFAULT_REQUEST_HEADERS = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
   'Accept-Encoding': 'gzip, deflate',
   'Accept-Language': 'zh-CN,zh;q=0.9',
-  'Host': 'www.hermesprice.com',
-  'Referer': 'http://www.hermesprice.com',
+  'Host': 'janefinds.com',
+  'Referer': 'https://janefinds.com/',
   'Proxy-Connection': 'keep-alive',
   'Upgrade-Insecure-Requests': '1',
   "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36"
@@ -176,5 +176,5 @@ IMAGES_URLS_FIELD = 'products_images'
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
 MYSQL_PASSWORD = '123456'
-MYSQL_DATABASE = 'z156'
+MYSQL_DATABASE = 'janefinds.com'
 MYSQL_PORT = 3306
